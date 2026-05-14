@@ -3,7 +3,8 @@ package com.gustavo.usercrud.controller;
 import com.gustavo.usercrud.model.User;
 import com.gustavo.usercrud.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
-
+import jakarta.validation.Valid;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.List;
 
 @RestController
@@ -11,13 +12,16 @@ import java.util.List;
 public class UserController {
 
     private final UserRepository repository;
+    private final BCryptPasswordEncoder encoder;
 
-    public UserController(UserRepository repository) {
+    public UserController(UserRepository repository, BCryptPasswordEncoder encoder) {
         this.repository = repository;
+        this.encoder = encoder;
     }
 
     @PostMapping
     public User create(@RequestBody User user) {
+        user.setPassword(encoder.encode(user.getPassword()));
         return repository.save(user);
     }
 
